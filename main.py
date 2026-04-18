@@ -43,12 +43,14 @@ class HttpHandler(BaseHTTPRequestHandler):
     data = self.rfile.read(int(self.headers["Content-Length"]))
     data_parse = urllib.parse.unquote_plus(data.decode())
 
-    data_dict = {
-      key: value for key, value in [el.split("=") for el in data_parse.split("&")]
-    }
+    data_dict = {}
+    for el in data_parse.split("&"):
+      if "=" in el:
+        key, value = el.split("=", 1)
+        data_dict[key] = value
 
     self.save_data(data_dict)
-    self.send_response(302)
+    self.send_response(303)
     self.send_header("Location", "/")
     self.end_headers()
 
