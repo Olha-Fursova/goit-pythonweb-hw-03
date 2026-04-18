@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Messages</title>
+</head>
+<body>
+    <h1>All messages</h1>
+
+    {% for time, msg in messages.items() %}
+        <p><b>{{ time }}</b></p>
+        <p>{{ msg.username }}: {{ msg.message }}</p>
+        <hr>
+    {% endfor %}
+
+</body>
+</html>
