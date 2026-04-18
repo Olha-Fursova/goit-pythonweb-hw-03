@@ -6,13 +6,19 @@ import pathlib
 import mimetypes
 from jinja2 import Environment, FileSystemLoader
 
+# Вказую на місцерозташування проєкту та де зберігається дата
+
 BASE_DIR = pathlib.Path()
 STORAGE_DIR = BASE_DIR / "storage"
 DATA_FILE = STORAGE_DIR / "data.json"
 
 env = Environment(loader=FileSystemLoader("templates"))
 
+# Створення основного класу та логіки
+
 class HttpHandler(BaseHTTPRequestHandler):
+
+  # Метод для визначення сторінки та реагування на помилки з вказаними на то відповідними шляхами
   def do_GET(self):
     pr_url = urllib.parse.urlparse(self.path)
 
@@ -30,6 +36,9 @@ class HttpHandler(BaseHTTPRequestHandler):
       else:
         self.send_html_file("error.html", 404)
 
+  # Відтворення основної логіки додавання нових даних при надсиланні повідомлення. 
+  # Після натискання на кнопку відправити користувача перенаправить на основну сторінку, а дані будуть збережені
+
   def do_POST(self):
     data = self.rfile.read(int(self.headers["Content-Length"]))
     data_parse = urllib.parse.unquote_plus(data.decode())
@@ -43,6 +52,8 @@ class HttpHandler(BaseHTTPRequestHandler):
     self.send_header("Location", "/")
     self.end_headers()
 
+  # Реалізовую основну логіку надсилання сторінок
+
   def send_html_file(self, filename, status=200):
     self.send_response(status)
     self.send_header("Content-type", "text/html")
@@ -50,6 +61,8 @@ class HttpHandler(BaseHTTPRequestHandler):
 
     with open(filename, "rb") as fd:
       self.wfile.write(fd.read())
+
+  # Відповідна логіка зі зчитування статичних файлів, як стилі чи медіа
 
   def send_static(self):
     self.send_response(200)
@@ -63,6 +76,8 @@ class HttpHandler(BaseHTTPRequestHandler):
 
     with open(f".{self.path}", "rb") as file:
       self.wfile.write(file.read())
+  
+  # Побудова методу для збереження дати
 
   def save_data(self, data):
     STORAGE_DIR.mkdir(exist_ok=True)
@@ -78,6 +93,8 @@ class HttpHandler(BaseHTTPRequestHandler):
     with open(DATA_FILE, "w", encoding="utf-8") as f:
       json.dump(json_data, f, indent=4, ensure_ascii=False)
     
+  # Основна мета даного методу - рендеринг збереженої дати повідомлень
+  
   def render_read_page(self):
     try:
       with open(DATA_FILE, "r", encoding="utf-8") as f:
