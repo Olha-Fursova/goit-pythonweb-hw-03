@@ -114,9 +114,10 @@ class HttpHandler(BaseHTTPRequestHandler):
     self.wfile.write(output.encode("utf-8"))
 
 
-def run():
+def run(server_class=HTTPServer, handler_class=HttpHandler):
   server_address = ("", 3000)
-  http = HTTPServer(server_address, HttpHandler)
+  http = server_class(server_address, handler_class)
+  http.timeout = 1
   print("Server running on http://localhost:3000")
 
   try:
